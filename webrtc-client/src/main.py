@@ -51,7 +51,7 @@ def start_rtc(frame_queue):
     rtc_thread.start()
 
 def start_gui(frame_queue):
-    gui = Dearpygui("MainView", 800, 500, frame_queue)
+    gui = Dearpygui("MainView", 800, 600, frame_queue)
     gui.init_gui()
 
 def main():
