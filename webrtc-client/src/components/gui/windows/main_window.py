@@ -18,12 +18,12 @@ class MainWindow(Window):
         self.TAG = self.__class__.__name__
         def make_tag(name):
             return f"{self.TAG}_{name}"
-        self.TEXTURE_REGISTER_TAG = make_tag("texture_register") 
-        self.TEXTURE_TAG = make_tag("texture")
-        self.IMAGE_TAG = make_tag("image")
+        self.TAG_TEXTURE_REGISTER = make_tag("texture_register") 
+        self.TAG_TEXTURE = make_tag("texture")
+        self.TAG_IMAGE = make_tag("image")
 
     def render(self, dpg):
-        with dpg.texture_registry(tag=self.TEXTURE_REGISTER_TAG):
+        with dpg.texture_registry(tag=self.TAG_TEXTURE_REGISTER):
             pass
 
         with dpg.window(tag=self.TAG, label=self.lable, width=self.width, height=self.height):
@@ -43,22 +43,22 @@ class MainWindow(Window):
             self.setup_display(dpg, width, height)
 
             # Display the image
-            if dpg.does_item_exist(self.TEXTURE_TAG):
-                dpg.set_value(self.TEXTURE_TAG, texture_data)
+            if dpg.does_item_exist(self.TAG_TEXTURE):
+                dpg.set_value(self.TAG_TEXTURE, texture_data)
 
     def setup_display(self, dpg, width, height):
-        if (not dpg.does_item_exist(self.TEXTURE_TAG)):
+        if (not dpg.does_item_exist(self.TAG_TEXTURE)):
             dpg.add_raw_texture(
-                tag=self.TEXTURE_TAG, 
+                tag=self.TAG_TEXTURE, 
                 width=width, 
                 height=height, 
                 default_value=[],
                 format=dpg.mvFormat_Float_rgb,
-                parent=self.TEXTURE_REGISTER_TAG
+                parent=self.TAG_TEXTURE_REGISTER
             )
             dpg.add_image(
-                self.TEXTURE_TAG,
-                tag=self.IMAGE_TAG,
+                self.TAG_TEXTURE,
+                tag=self.TAG_IMAGE,
                 parent=self.TAG
             )
 
