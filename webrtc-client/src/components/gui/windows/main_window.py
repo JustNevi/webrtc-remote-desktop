@@ -18,6 +18,7 @@ class MainWindow(Window):
         self.TAG = self.__class__.__name__
         def make_tag(name):
             return f"{self.TAG}_{name}"
+        self.TAG_INFO = make_tag("info")
         self.TAG_TEXTURE_REGISTER = make_tag("texture_register") 
         self.TAG_TEXTURE = make_tag("texture")
         self.TAG_IMAGE = make_tag("image")
@@ -27,7 +28,7 @@ class MainWindow(Window):
             pass
 
         with dpg.window(tag=self.TAG, label=self.lable, width=self.width, height=self.height):
-            dpg.add_text("Waiting for video stream...")
+            dpg.add_text("Waiting for video stream...", tag=self.TAG_INFO)
 
     def update(self, dpg):
         self.update_frame(dpg) 
@@ -48,6 +49,10 @@ class MainWindow(Window):
 
     def setup_display(self, dpg, width, height):
         if (not dpg.does_item_exist(self.TAG_TEXTURE)):
+            # Delete information to replace with image
+            dpg.delete_item(self.TAG_INFO)
+
+            # Create texture and image to render frames
             dpg.add_raw_texture(
                 tag=self.TAG_TEXTURE, 
                 width=width, 
