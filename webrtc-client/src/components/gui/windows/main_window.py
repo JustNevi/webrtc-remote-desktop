@@ -32,6 +32,8 @@ class MainWindow(Window):
         with dpg.window(tag=self.TAG, label=self.lable, width=self.width, height=self.height):
             dpg.add_text("Waiting for video stream...", tag=self.TAG_INFO)
 
+        self.register_mouse_handlers()
+
     def update(self):
         self.update_frame() 
 
@@ -40,7 +42,7 @@ class MainWindow(Window):
         if (not self.frame_queue.empty()):
             video_frame = self.frame_queue.get_nowait()
 
-            texture_data, width, height = self._convert_video_frame_into_texture_data(video_frame) 
+            texture_data, width, height = self.convert_video_frame_into_texture_data(video_frame) 
 
             # Create dynmic texture to render frame and setup size
             self.setup_display(width, height)
@@ -69,7 +71,7 @@ class MainWindow(Window):
                 parent=self.TAG
             )
 
-    def _convert_video_frame_into_texture_data(self, frame: VideoFrame):
+    def convert_video_frame_into_texture_data(self, frame: VideoFrame):
         img = frame.to_ndarray(format="bgr24")
         
         # Convert BGR to RGB for DearPyGUI
@@ -85,3 +87,35 @@ class MainWindow(Window):
         height, width = img_rgb.shape[:2]
 
         return img_flat, width, height
+
+    # Register mouse events to get mouse position
+    def register_mouse_handlers(self):
+        with dpg.handler_registry():
+            dpg.add_mouse_down_handler(callback=self.mouse_down_callback)
+            dpg.add_mouse_release_handler(callback=self.mouse_release_callback)
+            dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Left, callback=self.mouse_drag_callback)
+
+    def mouse_down_callback(self, sender, data):
+        pos = dpg.get_mouse_pos()
+        image_pos = self.get_on_image_position(pos) 
+        print("Down", pos, image_pos)
+
+    def mouse_release_callback(self, sender, data):
+        pos = dpg.get_mouse_pos()
+        print("Release", pos)
+
+    def mouse_drag_callback(self, sender, data):
+        pos = dpg.get_mouse_pos()
+        print("Drag", pos)
+
+    # Calculate position on image related to local window position
+    def get_on_image_position(self, position):
+        # Get image position on this window (title height included)
+        image_pos = dpg.get_item_pos(self.TAG_IMAGE)
+
+        # This is actually image top-left position without title height (custom solution)
+        offset = (image_pos[0], image_pos[0])
+
+        return (position[0] - offset[0], position[1] - offset[1])
+
+         
