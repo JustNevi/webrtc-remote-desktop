@@ -147,10 +147,25 @@ class MainWindow(Window):
             dpg.add_key_press_handler(callback=self.keyboard_press_callback)
             dpg.add_key_release_handler(callback=self.keyboard_release_callback)
 
+    def key_ignore(func):
+        def wrapper(self, sender, data, *args, **kwargs):
+            # 655 - left click
+            # 656 - right click
+            # 657 - middle click
+            # 661 - scroll vertical  
+            # 660 - scroll horisontal  
+            ignore = [ 655, 656, 657, 661, 660 ]
+            if (data not in ignore):
+                func(self, sender, data, *args, **kwargs)
+
+        return wrapper
+
+    @key_ignore
     def keyboard_press_callback(self, sender, data):
         # "data" is key code
         self.control_input.keyboard.press(data)
 
+    @key_ignore
     def keyboard_release_callback(self, sender, data):
         # "data" is key code
         self.control_input.keyboard.release(data)
