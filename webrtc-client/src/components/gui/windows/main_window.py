@@ -35,7 +35,9 @@ class MainWindow(Window):
         with dpg.window(tag=self.TAG, label=self.lable, width=self.width, height=self.height):
             dpg.add_text("Waiting for video stream...", tag=self.TAG_INFO)
 
+        # Input handlers
         self.register_mouse_handlers()
+        self.register_keyboard_handlers()
 
     def update(self):
         self.update_frame() 
@@ -100,8 +102,8 @@ class MainWindow(Window):
             dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Right, callback=self.mouse_drag_callback)
 
     def mouse_down_callback(self, sender, data):
-        # data[0] is the mouse button (0=Left, 1=Right, 2=Middle)
-        # data[1] is time 
+        # "data[0]" is the mouse button (0=Left, 1=Right, 2=Middle)
+        # "data[1]" is time 
         buttom = data[0]
         pos = dpg.get_mouse_pos()
 
@@ -110,7 +112,7 @@ class MainWindow(Window):
         self.control_input.mouse.down(buttom, image_pos)
 
     def mouse_release_callback(self, sender, data):
-        # data is the mouse button (0=Left, 1=Right, 2=Middle)
+        # "data" is the mouse button (0=Left, 1=Right, 2=Middle)
         buttom = data 
         pos = dpg.get_mouse_pos()
 
@@ -119,7 +121,7 @@ class MainWindow(Window):
         self.control_input.mouse.release(buttom, image_pos)
 
     def mouse_drag_callback(self, sender, data):
-        # data is a list: [button, drag_delta_x, drag_delta_y]
+        # "data" is a list: [button, drag_delta_x, drag_delta_y]
         buttom = data[0]
         delta_pos = (data[1], data[2])
         pos = dpg.get_mouse_pos()
@@ -139,3 +141,16 @@ class MainWindow(Window):
         return (position[0] - offset[0], position[1] - offset[1])
 
          
+    # Register keyboard events to get keys inputs 
+    def register_keyboard_handlers(self):
+        with dpg.handler_registry():
+            dpg.add_key_press_handler(callback=self.keyboard_press_callback)
+            dpg.add_key_release_handler(callback=self.keyboard_release_callback)
+
+    def keyboard_press_callback(self, sender, data):
+        # "data" is key code
+        self.control_input.keyboard.press(data)
+
+    def keyboard_release_callback(self, sender, data):
+        # "data" is key code
+        self.control_input.keyboard.release(data)

@@ -10,7 +10,9 @@ class MouseInput:
 
     def input(self, event, buttom, info):
         data = {}
-
+       
+        # input type - mouse
+        data["t"] = "m"
         data["e"] = event
         data["b"] = buttom
         data["i"] = info
