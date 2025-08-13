@@ -3,8 +3,9 @@ import logging
 import queue
 
 from aiortc import RTCPeerConnection, RTCSessionDescription
-from aiortc.contrib.media import MediaPlayer
 from aiortc.mediastreams import VideoStreamTrack
+
+from components.rtc.tracks.screen_capture_track import ScreenCaptureTrack
 
 class RTCApi:
     def __init__(self, is_offer=True, frame_queue: queue.Queue=None, on_message=lambda msg: print(msg), do_logging=True):
@@ -35,9 +36,7 @@ class RTCApi:
 
         if (not self.is_offer):
             # Setup tracks
-            player = MediaPlayer("/dev/video0")
-            video_track = player.video
-            self.pc.addTrack(video_track)
+            self.pc.addTrack(ScreenCaptureTrack(fps=120))
         else:
             self.pc.addTrack(VideoStreamTrack())
 
