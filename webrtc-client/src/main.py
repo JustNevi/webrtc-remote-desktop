@@ -5,7 +5,7 @@ import logging
 import asyncio
 import requests
 
-from components.rtc_api import RTCApi
+from components.rtc.rtc_api import RTCApi
 
 from components.gui.gui import Dearpygui
 

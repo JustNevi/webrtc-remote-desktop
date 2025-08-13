@@ -7,6 +7,8 @@ from fractions import Fraction
 
 from aiortc.mediastreams import VideoStreamTrack
 
+from components.rtc.tracks.screen_capture_track import ScreenCaptureTrack
+
 class ScreenCaptureTrack(VideoStreamTrack):
     """
     A video stream track that captures the screen.

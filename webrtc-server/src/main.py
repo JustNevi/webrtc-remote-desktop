@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from components.rtc_api import RTCApi
+from components.rtc.rtc_api import RTCApi
 
 from quart import Quart, request, jsonify
 
