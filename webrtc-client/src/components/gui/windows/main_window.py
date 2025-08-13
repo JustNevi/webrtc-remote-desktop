@@ -100,6 +100,7 @@ class MainWindow(Window):
             dpg.add_mouse_release_handler(callback=self.mouse_release_callback)
             dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Left, callback=self.mouse_drag_callback)
             dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Right, callback=self.mouse_drag_callback)
+            dpg.add_mouse_wheel_handler(callback=self.mouse_wheel_callback)
 
     def mouse_down_callback(self, sender, data):
         # "data[0]" is the mouse button (0=Left, 1=Right, 2=Middle)
@@ -129,6 +130,9 @@ class MainWindow(Window):
         image_pos = self.get_on_image_position(pos) 
 
         self.control_input.mouse.drag(buttom, image_pos, delta_pos)
+
+    def mouse_wheel_callback(self, sender, data):
+        self.control_input.mouse.scroll(3, data)
 
     # Calculate position on image related to local window position
     def get_on_image_position(self, position):

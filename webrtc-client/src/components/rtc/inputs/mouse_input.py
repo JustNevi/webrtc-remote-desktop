@@ -2,8 +2,8 @@ class MouseInput:
     def __init__(self, on_input):
         self.on_input = on_input 
 
-    # event = [0, 1, 2]
-    # 0=Down, 1=Release, 2=Drag
+    # event = [0, 1, 2, 3]
+    # 0=Down, 1=Release, 2=Drag, 3=Scroll
 
     # buttom = [0, 1, 2]
     # 0=Left, 1=Right, 2=Middle
@@ -37,3 +37,9 @@ class MouseInput:
             "dp": delta_position
         }
         self.input(2, buttom, info)
+
+    def scroll(self, buttom, value):
+        info = {
+            "v": value,
+        }
+        self.input(3, buttom, info)
