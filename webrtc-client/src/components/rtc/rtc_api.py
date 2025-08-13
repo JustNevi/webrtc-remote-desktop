@@ -7,7 +7,14 @@ from aiortc.contrib.media import MediaPlayer
 from aiortc.mediastreams import VideoStreamTrack
 
 class RTCApi:
-    def __init__(self, is_offer=True, frame_queue: queue.Queue=None, on_message=lambda msg: print(msg), do_logging=True):
+    def __init__(
+            self, 
+            is_offer=True, 
+            frame_queue: queue.Queue=None,
+            control_queue: queue.Queue=None, 
+            on_message=lambda msg: print(msg), 
+            do_logging=True
+        ):
         self.pc = None 
         self.is_offer = is_offer
 
@@ -17,7 +24,12 @@ class RTCApi:
 
         # Datachannel
         self.datachannel = None
+        self.datachannel_is_open = False
         self.on_message = on_message
+
+        # Control
+        self.control_transferring = True
+        self.control_queue = control_queue
 
         # Track
         self.frame_receiving = True
@@ -50,6 +62,8 @@ class RTCApi:
             if track.kind == "video":
                 self.logger.info("Incoming video track received.")
 
+                # Create async task to receive frames from track 
+                # and put in queue for gui render
                 if (self.frame_queue):
                     async def receiver():
                         while (self.frame_receiving):
@@ -57,10 +71,12 @@ class RTCApi:
                             frame = await track.recv()
 
                             # Empty all old frames 
-                            while not self.frame_queue.empty():
+                            while (not self.frame_queue.empty()):
                                 self.frame_queue.get_nowait()
 
                             self.frame_queue.put_nowait(frame)
+                            
+                            await asyncio.sleep(0)
 
                     asyncio.create_task(receiver())
 
@@ -81,7 +97,18 @@ class RTCApi:
     def setup_datachannel(self, datachannel):
         @datachannel.on("open")
         def on_open():
+            self.datachannel_is_open = True
             self.logger.info("Data channel is open.")
+
+            if (self.control_queue):
+                async def transfer():
+                    while (self.control_transferring):
+                        while (not self.control_queue.empty()):
+                            control = self.control_queue.get_nowait()
+                            self.send(control)
+                        await asyncio.sleep(0.2)
+
+                asyncio.create_task(transfer())
 
         @datachannel.on("message")
         def on_message(message):
@@ -128,6 +155,11 @@ class RTCApi:
             self.sdp_remote = answer 
             self.logger.info("The answer was accepted.")
 
+    # Send message via datachannel
+    def send(self, message):
+        if (message):
+            if (self.datachannel and self.datachannel_is_open):
+                self.datachannel.send(message)
 
     async def shutdown(self):
         if (self.pc):

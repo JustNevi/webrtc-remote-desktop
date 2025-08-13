@@ -7,7 +7,7 @@ import dearpygui.dearpygui as dpg
 from components.gui.windows.window import Window
 
 class MainWindow(Window):
-    def __init__(self, lable, width, height, frame_queue):
+    def __init__(self, lable, width, height, frame_queue, control_input):
         # View
         self.lable = lable
         self.width = width
@@ -15,6 +15,9 @@ class MainWindow(Window):
 
         # Video frame queue
         self.frame_queue = frame_queue
+
+        # Control input management
+        self.control_input = control_input
         
         # Tags
         self.TAG = self.__class__.__name__
@@ -98,19 +101,32 @@ class MainWindow(Window):
 
     def mouse_down_callback(self, sender, data):
         # data[0] is the mouse button (0=Left, 1=Right, 2=Middle)
+        # data[1] is time 
+        buttom = data[0]
         pos = dpg.get_mouse_pos()
+
         image_pos = self.get_on_image_position(pos) 
-        print("Down", pos, image_pos)
+
+        self.control_input.mouse.down(buttom, image_pos)
 
     def mouse_release_callback(self, sender, data):
-        # data[0] is the mouse button (0=Left, 1=Right, 2=Middle)
+        # data is the mouse button (0=Left, 1=Right, 2=Middle)
+        buttom = data 
         pos = dpg.get_mouse_pos()
-        print("Release", pos)
+
+        image_pos = self.get_on_image_position(pos) 
+
+        self.control_input.mouse.release(buttom, image_pos)
 
     def mouse_drag_callback(self, sender, data):
         # data is a list: [button, drag_delta_x, drag_delta_y]
+        buttom = data[0]
+        delta_pos = (data[1], data[2])
         pos = dpg.get_mouse_pos()
-        print("Drag", pos, data[0])
+
+        image_pos = self.get_on_image_position(pos) 
+
+        self.control_input.mouse.drag(buttom, image_pos, delta_pos)
 
     # Calculate position on image related to local window position
     def get_on_image_position(self, position):

@@ -1,4 +1,5 @@
 import os
+import json
 import queue
 import threading
 import logging
@@ -6,6 +7,8 @@ import asyncio
 import requests
 
 from components.rtc.rtc_api import RTCApi
+from components.rtc.inputs.input import Input 
+from components.rtc.inputs.mouse_input import MouseInput 
 
 from components.gui.gui import Dearpygui
 
@@ -21,9 +24,9 @@ SERVER_PORT = os.getenv("SERVER_PORT")
 SERVER_ENDPOINT = f"http://{SERVER_IP}:{SERVER_PORT}"
 
 
-async def run_rtc(frame_queue):
+async def run_rtc(frame_queue, control_queue):
     # Create rtc api
-    rtc = RTCApi(is_offer=True, frame_queue=frame_queue) 
+    rtc = RTCApi(is_offer=True, frame_queue=frame_queue, control_queue=control_queue) 
 
     sdp = await rtc.createSession()
 
@@ -43,23 +46,32 @@ async def run_rtc(frame_queue):
     finally:
         await rtc.shutdown()
 
-def start_rtc(frame_queue):
+def start_rtc(frame_queue, control_queue):
     def target():
-        asyncio.run(run_rtc(frame_queue))
+        asyncio.run(run_rtc(frame_queue, control_queue))
 
     rtc_thread = threading.Thread(target=target, daemon=True)
     rtc_thread.start()
 
-def start_gui(frame_queue):
-    gui = Dearpygui("MainView", 800, 600, frame_queue)
+def start_gui(frame_queue, control_input):
+    gui = Dearpygui("MainView", 800, 600, frame_queue, control_input)
     gui.init_gui()
 
 def main():
     # Create queue of frames to deliver between RTC and GUI
     frame_queue = queue.Queue(maxsize=4)
+    control_queue = queue.Queue()
 
-    start_rtc(frame_queue)
-    start_gui(frame_queue)
+    def on_input(message):
+        msg = json.dumps(message)
+        control_queue.put_nowait(msg)
+        print("INPUT:", msg)
+
+    mouse_input = MouseInput(on_input)
+    input = Input(mouse_input=mouse_input)
+
+    start_rtc(frame_queue, control_queue)
+    start_gui(frame_queue, input)
 
 
 if ( __name__ == "__main__"):

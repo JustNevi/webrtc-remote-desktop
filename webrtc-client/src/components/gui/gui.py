@@ -4,12 +4,14 @@ from components.gui.windows.window import Window
 from components.gui.windows.main_window import MainWindow
 
 class Dearpygui:
-    def __init__(self, title, width, height, frame_queue):
+    def __init__(self, title, width, height, frame_queue, control_input):
         self.title = title
         self.width = width 
         self.height = height
 
         self.frame_queue = frame_queue
+
+        self.control_input = control_input
 
     def init_gui(self):
         windows = self.setup_windows()
@@ -39,7 +41,7 @@ class Dearpygui:
     def setup_windows(self):
         windows: list[Window] = []
 
-        windows.append(MainWindow("MainWindow", self.width, self.height, self.frame_queue))
+        windows.append(MainWindow("MainWindow", self.width, self.height, self.frame_queue, self.control_input))
         
         return windows  
 
