@@ -20,7 +20,7 @@ class Dearpygui:
 
         # Init windows and render components
         for window in windows:
-            window.render(dpg)
+            window.render()
 
         dpg.setup_dearpygui()
         dpg.show_viewport()
@@ -30,7 +30,7 @@ class Dearpygui:
         while dpg.is_dearpygui_running():
             # Make all needed updates in windows
             for window in windows:
-                window.update(dpg)
+                window.update()
 
             dpg.render_dearpygui_frame()    
 

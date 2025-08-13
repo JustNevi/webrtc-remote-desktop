@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from av import VideoFrame
 
+import dearpygui.dearpygui as dpg
+
 from components.gui.windows.window import Window
 
 class MainWindow(Window):
@@ -23,31 +25,31 @@ class MainWindow(Window):
         self.TAG_TEXTURE = make_tag("texture")
         self.TAG_IMAGE = make_tag("image")
 
-    def render(self, dpg):
+    def render(self):
         with dpg.texture_registry(tag=self.TAG_TEXTURE_REGISTER):
             pass
 
         with dpg.window(tag=self.TAG, label=self.lable, width=self.width, height=self.height):
             dpg.add_text("Waiting for video stream...", tag=self.TAG_INFO)
 
-    def update(self, dpg):
-        self.update_frame(dpg) 
+    def update(self):
+        self.update_frame() 
 
     # Update frame in image
-    def update_frame(self, dpg):
+    def update_frame(self):
         if (not self.frame_queue.empty()):
             video_frame = self.frame_queue.get_nowait()
 
-            texture_data, width, height = self._convert_video_frame_into_texture_data(dpg, video_frame) 
+            texture_data, width, height = self._convert_video_frame_into_texture_data(video_frame) 
 
             # Create dynmic texture to render frame and setup size
-            self.setup_display(dpg, width, height)
+            self.setup_display(width, height)
 
             # Display the image
             if dpg.does_item_exist(self.TAG_TEXTURE):
                 dpg.set_value(self.TAG_TEXTURE, texture_data)
 
-    def setup_display(self, dpg, width, height):
+    def setup_display(self, width, height):
         if (not dpg.does_item_exist(self.TAG_TEXTURE)):
             # Delete information to replace with image
             dpg.delete_item(self.TAG_INFO)
@@ -67,7 +69,7 @@ class MainWindow(Window):
                 parent=self.TAG
             )
 
-    def _convert_video_frame_into_texture_data(self, dpg, frame: VideoFrame):
+    def _convert_video_frame_into_texture_data(self, frame: VideoFrame):
         img = frame.to_ndarray(format="bgr24")
         
         # Convert BGR to RGB for DearPyGUI
