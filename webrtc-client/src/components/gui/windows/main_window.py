@@ -37,14 +37,14 @@ class MainWindow(Window):
     def update(self):
         self.update_frame() 
 
-    # Update frame in image
+    # Update frames in image
     def update_frame(self):
         if (not self.frame_queue.empty()):
             video_frame = self.frame_queue.get_nowait()
 
             texture_data, width, height = self.convert_video_frame_into_texture_data(video_frame) 
 
-            # Create dynmic texture to render frame and setup size
+            # Create dynmic texture to render frames and setup size
             self.setup_display(width, height)
 
             # Display the image
@@ -94,19 +94,23 @@ class MainWindow(Window):
             dpg.add_mouse_down_handler(callback=self.mouse_down_callback)
             dpg.add_mouse_release_handler(callback=self.mouse_release_callback)
             dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Left, callback=self.mouse_drag_callback)
+            dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Right, callback=self.mouse_drag_callback)
 
     def mouse_down_callback(self, sender, data):
+        # data[0] is the mouse button (0=Left, 1=Right, 2=Middle)
         pos = dpg.get_mouse_pos()
         image_pos = self.get_on_image_position(pos) 
         print("Down", pos, image_pos)
 
     def mouse_release_callback(self, sender, data):
+        # data[0] is the mouse button (0=Left, 1=Right, 2=Middle)
         pos = dpg.get_mouse_pos()
         print("Release", pos)
 
     def mouse_drag_callback(self, sender, data):
+        # data is a list: [button, drag_delta_x, drag_delta_y]
         pos = dpg.get_mouse_pos()
-        print("Drag", pos)
+        print("Drag", pos, data[0])
 
     # Calculate position on image related to local window position
     def get_on_image_position(self, position):
