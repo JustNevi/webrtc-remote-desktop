@@ -15,6 +15,7 @@ class MainWindow(Window):
 
         # Video frame queue
         self.frame_queue = frame_queue
+        self.frame_size = None
 
         # Control input management
         self.control_input = control_input
@@ -75,6 +76,8 @@ class MainWindow(Window):
                 tag=self.TAG_IMAGE,
                 parent=self.TAG
             )
+
+            self.frame_size = (width, height)
 
     def convert_video_frame_into_texture_data(self, frame: VideoFrame):
         img = frame.to_ndarray(format="bgr24")
