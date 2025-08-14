@@ -59,6 +59,9 @@ class MainWindow(Window):
 
     def setup_display(self, width, height):
         if (not dpg.does_item_exist(self.TAG_TEXTURE)):
+            # Store frame size
+            self.frame_size = (width, height)
+
             # Delete information to replace with image
             dpg.delete_item(self.TAG_INFO)
 
@@ -77,7 +80,6 @@ class MainWindow(Window):
                 parent=self.TAG
             )
 
-            self.frame_size = (width, height)
 
     def convert_video_frame_into_texture_data(self, frame: VideoFrame):
         img = frame.to_ndarray(format="bgr24")
@@ -99,12 +101,28 @@ class MainWindow(Window):
     # Register mouse events to get mouse position
     def register_mouse_handlers(self):
         with dpg.handler_registry():
+            dpg.add_mouse_move_handler(callback=self.mouse_move_callback)
             dpg.add_mouse_down_handler(callback=self.mouse_down_callback)
             dpg.add_mouse_release_handler(callback=self.mouse_release_callback)
-            dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Left, callback=self.mouse_drag_callback)
-            dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Right, callback=self.mouse_drag_callback)
+            #dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Left, callback=self.mouse_drag_callback)
+            #dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Right, callback=self.mouse_drag_callback)
             dpg.add_mouse_wheel_handler(callback=self.mouse_wheel_callback)
 
+
+    def mouse_move_callback(self, sender, data):
+        # "data[0]" is the mouse button (0=Left, 1=Right, 2=Middle)
+        # "data[1]" is time 
+        image_pos = self.get_on_image_position(data) 
+
+        self.control_input.mouse.move(image_pos)
+
+    def image_exists(func):
+        def wrapper(self, sender, data, *args, **kwargs):
+            if (dpg.does_item_exist(self.TAG_TEXTURE)):
+                func(self, sender, data, *args, **kwargs)
+        return wrapper
+
+    @image_exists
     def mouse_down_callback(self, sender, data):
         # "data[0]" is the mouse button (0=Left, 1=Right, 2=Middle)
         # "data[1]" is time 
@@ -115,6 +133,7 @@ class MainWindow(Window):
 
         self.control_input.mouse.down(button, image_pos)
 
+    @image_exists
     def mouse_release_callback(self, sender, data):
         # "data" is the mouse button (0=Left, 1=Right, 2=Middle)
         button = data 
@@ -124,6 +143,7 @@ class MainWindow(Window):
 
         self.control_input.mouse.release(button, image_pos)
 
+    @image_exists
     def mouse_drag_callback(self, sender, data):
         # "data" is a list: [button, drag_delta_x, drag_delta_y]
         button = data[0]
@@ -134,6 +154,7 @@ class MainWindow(Window):
 
         self.control_input.mouse.drag(button, image_pos, delta_pos)
 
+    @image_exists
     def mouse_wheel_callback(self, sender, data):
         self.control_input.mouse.scroll(3, data)
 
@@ -164,7 +185,6 @@ class MainWindow(Window):
             ignore = [ 655, 656, 657, 661, 660 ]
             if (data not in ignore):
                 func(self, sender, data, *args, **kwargs)
-
         return wrapper
 
     @key_ignore

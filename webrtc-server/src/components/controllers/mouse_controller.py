@@ -14,8 +14,11 @@ class MouseController:
             yg = y >= 0 and y < self.size[1]
             if (xg and yg):
                 func(self, button, x, y, *args, **kwargs)
-
         return wrapper
+
+    @in_gui
+    def move(self, button, x, y):
+        gui.moveTo(x, y,)
 
     @in_gui
     def down(self, button, x, y):

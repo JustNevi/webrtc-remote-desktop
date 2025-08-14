@@ -5,7 +5,7 @@ class MouseInput:
         self.controller = MouseController() 
 
     # event = [0, 1, 2, 3]
-    # 0=Down, 1=Release, 2=Drag, 3=Scroll
+    # 0=Move, 1=Down, 2=Release, 3=Drag, 4=Scroll
 
     # button = [0, 1, 2]
     # 0=Left, 1=Right, 2=Middle
@@ -21,8 +21,11 @@ class MouseInput:
 
         if (event == 0):
             position = info["p"]
-            self.controller.down(buttons[button], position[0], position[1])
+            self.controller.move(buttons[button], position[0], position[1])
         elif (event == 1):
+            position = info["p"]
+            self.controller.down(buttons[button], position[0], position[1])
+        elif (event == 2):
             position = info["p"]
             self.controller.up(buttons[button], position[0], position[1])
 

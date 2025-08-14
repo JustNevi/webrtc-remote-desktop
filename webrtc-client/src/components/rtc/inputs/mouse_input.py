@@ -3,7 +3,7 @@ class MouseInput:
         self.on_input = on_input 
 
     # event = [0, 1, 2, 3]
-    # 0=Down, 1=Release, 2=Drag, 3=Scroll
+    # 0=Move, 1=Down, 2=Release, 3=Drag, 4=Scroll
 
     # button = [0, 1, 2]
     # 0=Left, 1=Right, 2=Middle
@@ -19,27 +19,33 @@ class MouseInput:
 
         self.on_input(data)
 
+    def move(self, position):
+        info = {
+            "p": position
+        }
+        self.input(0, 0, info)
+
     def down(self, button, position):
         info = {
             "p": position
         }
-        self.input(0, button, info)
+        self.input(1, button, info)
 
     def release(self, button, position):
         info = {
             "p": position
         }
-        self.input(1, button, info)
+        self.input(2, button, info)
 
     def drag(self, button, position, delta_position):
         info = {
             "p": position,
             "dp": delta_position
         }
-        self.input(2, button, info)
+        self.input(3, button, info)
 
     def scroll(self, button, value):
         info = {
             "v": value,
         }
-        self.input(3, button, info)
+        self.input(4, button, info)
