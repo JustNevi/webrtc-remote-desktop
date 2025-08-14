@@ -1,3 +1,4 @@
+import os
 import asyncio
 import logging
 
@@ -5,6 +6,17 @@ from components.rtc.rtc_api import RTCApi
 from components.rtc.inputs.input import Input 
 
 from quart import Quart, request, jsonify
+
+# Env
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except:
+    pass
+
+HOST = os.getenv("RTC_RD_HOST") 
+PORT = os.getenv("RTC_RD_PORT") 
+DEBUG = os.getenv("RTC_RD_DEBUG") 
 
 # Logging
 logging.basicConfig(level=logging.INFO)
@@ -44,4 +56,4 @@ async def add_offer_sdp():
 
 
 if ( __name__ == "__main__"):
-    app.run(debug=True)
+    app.run(host=HOST, port=PORT, debug=DEBUG)
