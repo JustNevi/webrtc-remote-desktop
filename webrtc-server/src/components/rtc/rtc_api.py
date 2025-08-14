@@ -131,7 +131,7 @@ class RTCApi:
     async def shutdown(self):
         if (self.pc):
             if (self.datachannel):
-                await self.datachannel.close()
+                self.datachannel.close()
                 self.logger.info("Datachannel closed.")
 
             await self.pc.close()
