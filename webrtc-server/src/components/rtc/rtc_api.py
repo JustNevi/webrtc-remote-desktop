@@ -8,7 +8,14 @@ from aiortc.mediastreams import VideoStreamTrack
 from components.rtc.tracks.screen_capture_track import ScreenCaptureTrack
 
 class RTCApi:
-    def __init__(self, is_offer=True, frame_queue: queue.Queue=None, on_message=lambda msg: print(msg), do_logging=True):
+    def __init__(
+            self, 
+            is_offer=True, 
+            frame_queue: queue.Queue=None, 
+            control_queue: queue.Queue=None, 
+            on_message=lambda msg: print(msg), 
+            do_logging=True
+        ):
         self.pc = None 
         self.is_offer = is_offer
 
@@ -19,6 +26,10 @@ class RTCApi:
         # Datachannel
         self.datachannel = None
         self.on_message = on_message
+
+        # Control
+        self.control_transferring = True
+        self.control_queue = control_queue
 
         # Track
         self.frame_receiving = True
@@ -84,7 +95,14 @@ class RTCApi:
 
         @datachannel.on("message")
         def on_message(message):
-            self.on_message(message)
+            # Handle messages for processing in control input thread
+            if (self.control_queue):
+                async def control():
+                    if (self.control_transferring):
+                        self.control_queue.put_nowait(message)
+                    await asyncio.sleep(0.4)
+                asyncio.create_task(control())
+            #self.on_message(message)
 
         @datachannel.on("close")
         def on_close():

@@ -1,6 +1,7 @@
 import os
 import asyncio
 import logging
+import queue
 
 from components.rtc.rtc_api import RTCApi
 from components.rtc.inputs.input import Input 
@@ -30,8 +31,12 @@ app = Quart(__name__)
 @app.before_serving
 async def create_rtc_api():
     global rtc_api
-    input = Input()
-    rtc_api = RTCApi(is_offer=False, on_message=input.on_message)
+    control_queue = queue.Queue()
+
+    input = Input(control_queue)
+    input.start()
+
+    rtc_api = RTCApi(is_offer=False, control_queue=control_queue)
 
 @app.after_serving
 async def shutdown_rtc_api():
