@@ -1,4 +1,7 @@
+from components.rtc.inputs.mouse_input import MouseInput 
+from components.rtc.inputs.keyboard_input import KeyboardInput 
+
 class Input:
-    def __init__(self, mouse_input=None, keyboard_input=None):
-        self.mouse = mouse_input
-        self.keyboard = keyboard_input 
+    def __init__(self, on_input):
+        self.mouse = MouseInput(on_input) 
+        self.keyboard = KeyboardInput(on_input) 

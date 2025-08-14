@@ -5,41 +5,41 @@ class MouseInput:
     # event = [0, 1, 2, 3]
     # 0=Down, 1=Release, 2=Drag, 3=Scroll
 
-    # buttom = [0, 1, 2]
+    # button = [0, 1, 2]
     # 0=Left, 1=Right, 2=Middle
 
-    def input(self, event, buttom, info):
+    def input(self, event, button, info):
         data = {}
        
         # input type - mouse
         data["t"] = "m"
         data["e"] = event
-        data["b"] = buttom
+        data["b"] = button
         data["i"] = info
 
         self.on_input(data)
 
-    def down(self, buttom, position):
+    def down(self, button, position):
         info = {
             "p": position
         }
-        self.input(0, buttom, info)
+        self.input(0, button, info)
 
-    def release(self, buttom, position):
+    def release(self, button, position):
         info = {
             "p": position
         }
-        self.input(1, buttom, info)
+        self.input(1, button, info)
 
-    def drag(self, buttom, position, delta_position):
+    def drag(self, button, position, delta_position):
         info = {
             "p": position,
             "dp": delta_position
         }
-        self.input(2, buttom, info)
+        self.input(2, button, info)
 
-    def scroll(self, buttom, value):
+    def scroll(self, button, value):
         info = {
             "v": value,
         }
-        self.input(3, buttom, info)
+        self.input(3, button, info)

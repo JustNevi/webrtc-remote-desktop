@@ -105,31 +105,31 @@ class MainWindow(Window):
     def mouse_down_callback(self, sender, data):
         # "data[0]" is the mouse button (0=Left, 1=Right, 2=Middle)
         # "data[1]" is time 
-        buttom = data[0]
+        button = data[0]
         pos = dpg.get_mouse_pos()
 
         image_pos = self.get_on_image_position(pos) 
 
-        self.control_input.mouse.down(buttom, image_pos)
+        self.control_input.mouse.down(button, image_pos)
 
     def mouse_release_callback(self, sender, data):
         # "data" is the mouse button (0=Left, 1=Right, 2=Middle)
-        buttom = data 
+        button = data 
         pos = dpg.get_mouse_pos()
 
         image_pos = self.get_on_image_position(pos) 
 
-        self.control_input.mouse.release(buttom, image_pos)
+        self.control_input.mouse.release(button, image_pos)
 
     def mouse_drag_callback(self, sender, data):
         # "data" is a list: [button, drag_delta_x, drag_delta_y]
-        buttom = data[0]
+        button = data[0]
         delta_pos = (data[1], data[2])
         pos = dpg.get_mouse_pos()
 
         image_pos = self.get_on_image_position(pos) 
 
-        self.control_input.mouse.drag(buttom, image_pos, delta_pos)
+        self.control_input.mouse.drag(button, image_pos, delta_pos)
 
     def mouse_wheel_callback(self, sender, data):
         self.control_input.mouse.scroll(3, data)

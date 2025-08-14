@@ -8,8 +8,6 @@ import requests
 
 from components.rtc.rtc_api import RTCApi
 from components.rtc.inputs.input import Input 
-from components.rtc.inputs.mouse_input import MouseInput 
-from components.rtc.inputs.keyboard_input import KeyboardInput 
 
 from components.gui.gui import Dearpygui
 
@@ -68,12 +66,7 @@ def main():
         control_queue.put_nowait(msg)
         print("INPUT:", msg)
 
-    mouse_input = MouseInput(on_input)
-    keyboard_input = KeyboardInput(on_input)
-    input = Input(
-        mouse_input=mouse_input,
-        keyboard_input=keyboard_input
-    )
+    input = Input(on_input)
 
     start_rtc(frame_queue, control_queue)
     start_gui(frame_queue, input)
