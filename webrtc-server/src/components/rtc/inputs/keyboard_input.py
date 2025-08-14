@@ -1,6 +1,6 @@
 class KeyboardInput:
     def __init__(self):
-        self.on_input = on_input 
+        pass
 
     # event = [0, 1]
     # 0=Press, 1=Release
