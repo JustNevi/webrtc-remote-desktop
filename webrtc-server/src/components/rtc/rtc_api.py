@@ -96,13 +96,13 @@ class RTCApi:
         @datachannel.on("message")
         def on_message(message):
             # Handle messages for processing in control input thread
-            if (self.control_queue):
-                async def control():
-                    if (self.control_transferring):
-                        self.control_queue.put_nowait(message)
-                    await asyncio.sleep(0.4)
-                asyncio.create_task(control())
-            #self.on_message(message)
+             if (self.control_queue):
+                if (self.control_transferring):
+                    # Empty all old controls 
+                    while not self.control_queue.empty():
+                        self.control_queue.get_nowait()
+
+                    self.control_queue.put_nowait(message)
 
         @datachannel.on("close")
         def on_close():

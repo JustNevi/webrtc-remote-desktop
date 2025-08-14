@@ -24,6 +24,7 @@ class Input:
                 control = self.control_queue.get_nowait()
                 self.control(control)
                 processed = True
+                time.sleep(0.05)
             if not processed:
                 time.sleep(0.005)
 
