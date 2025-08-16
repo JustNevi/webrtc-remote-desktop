@@ -1,5 +1,6 @@
 # Local
 .env
+.local
 
 # Python
 .venv
