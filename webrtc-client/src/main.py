@@ -62,9 +62,8 @@ def main():
     control_queue = queue.Queue()
 
     def on_input(message):
-        msg = json.dumps(message)
-        control_queue.put_nowait(msg)
-        print("INPUT:", msg)
+        control_queue.put_nowait(message)
+        print("INPUT:", message)
 
     input = Input(on_input)
 

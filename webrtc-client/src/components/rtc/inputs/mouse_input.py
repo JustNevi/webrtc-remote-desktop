@@ -9,13 +9,14 @@ class MouseInput:
     # 0=Left, 1=Right, 2=Middle
 
     def input(self, event, button, info):
-        data = {}
+        data = "" 
        
-        # input type - mouse
-        data["t"] = "m"
-        data["e"] = event
-        data["b"] = button
-        data["i"] = info
+        str_info = ""
+        for p, i in info.items():
+            str_info = f"{str_info}{i}:"
+
+        # "m:" input type - mouse
+        data = f"m:{event}:{button}#{str_info}"
 
         self.on_input(data)
 

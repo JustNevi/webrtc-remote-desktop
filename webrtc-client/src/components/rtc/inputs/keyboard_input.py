@@ -6,12 +6,10 @@ class KeyboardInput:
     # 0=Press, 1=Release
 
     def input(self, event, key):
-        data = {}
+        data = "" 
        
-        # input type - keyboard
-        data["t"] = "k"
-        data["e"] = event
-        data["k"] = key 
+        # "k:" input type - keyboard
+        data = f"k:{event}:{key}"
 
         self.on_input(data)
 
