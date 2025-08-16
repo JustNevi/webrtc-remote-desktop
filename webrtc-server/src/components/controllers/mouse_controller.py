@@ -18,7 +18,7 @@ class MouseController:
 
     @in_gui
     def move(self, button, x, y):
-        gui.moveTo(x, y,)
+        gui.moveTo(x, y)
 
     @in_gui
     def down(self, button, x, y):
