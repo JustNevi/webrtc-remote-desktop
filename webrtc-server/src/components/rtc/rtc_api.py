@@ -104,6 +104,7 @@ class RTCApi:
                         self.control_queue.get_nowait()
 
                     self.control_queue.put_nowait(message)
+                    time.sleep(0.004)
 
         @datachannel.on("close")
         def on_close():

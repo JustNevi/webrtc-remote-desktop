@@ -21,24 +21,26 @@ class Input:
         while (self.running):
             processed = False 
             while (not self.control_queue.empty()):
+                # Get control event message
                 control = self.control_queue.get_nowait()
+                # Control
                 self.control(control)
+
                 processed = True
+
                 time.sleep(0.05)
             if not processed:
                 time.sleep(0.005)
 
     def control(self, message):
-        js = json.loads(message)  
-
-        ctype = self.parse_type(js)
+        ctype = self.parse_type(message)
 
         if (ctype == "m"):
             if (self.mouse):
-                self.mouse.input(js)
+                self.mouse.input(message)
         elif (ctype == "k"):
             if (self.keyboard):
                 pass
 
     def parse_type(self, data):
-        return data["t"]
+        return data.split(":")[0]
