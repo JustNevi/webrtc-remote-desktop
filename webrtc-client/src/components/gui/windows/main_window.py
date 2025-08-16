@@ -19,6 +19,7 @@ class MainWindow(Window):
 
         # Control input management
         self.control_input = control_input
+        self.mouse_is_down = False
         
         # Tags
         self.TAG = self.__class__.__name__
@@ -123,6 +124,10 @@ class MainWindow(Window):
 
     @image_exists
     def mouse_down_callback(self, sender, data):
+        if (self.mouse_is_down):
+            return
+        self.mouse_is_down = True
+
         # "data[0]" is the mouse button (0=Left, 1=Right, 2=Middle)
         # "data[1]" is time 
         button = data[0]
@@ -134,6 +139,8 @@ class MainWindow(Window):
 
     @image_exists
     def mouse_release_callback(self, sender, data):
+        self.mouse_is_down = False 
+
         # "data" is the mouse button (0=Left, 1=Right, 2=Middle)
         button = data 
         pos = dpg.get_mouse_pos()
