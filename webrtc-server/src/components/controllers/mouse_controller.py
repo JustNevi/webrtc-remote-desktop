@@ -1,43 +1,43 @@
-import pyautogui as gui
+from Xlib import display, X
+from Xlib.ext.xtest import fake_input
 
 class MouseController:
     def __init__(self):
-        self.is_left_down = False
-        self.is_right_down = False
-
-        x, y = gui.size()
-        self.size = (x, y) 
-
-    def in_gui(func):
-        def wrapper(self, button, x, y, *args, **kwargs):
-            xg = x >=0 and x < self.size[0]
-            yg = y >= 0 and y < self.size[1]
-            if (xg and yg):
-                func(self, button, x, y, *args, **kwargs)
-        return wrapper
-
-    @in_gui
-    def move(self, button, x, y):
-        gui.moveTo(x, y)
-
-    @in_gui
-    def down(self, button, x, y):
-        if (button == "left"):
-            if (self.is_left_down):
-                return
-            self.is_left_down = True
-        elif (button == "right"):
-            if (self.is_right_down):
-                return
-            self.is_right_down = True
-
-        gui.mouseDown(x=x, y=y, button=button)
-
-    @in_gui
-    def up(self, button, x, y):
-        if (button == "left"):
-            self.is_left_down = False 
-        elif (button == "right"):
-            self.is_right_down = False 
-
-        gui.mouseUp(x=x, y=y, button=button)
+        self.disp = display.Display()
+    
+    def move_to(self, x, y):
+        fake_input(self.disp, X.MotionNotify, x=x, y=y)
+        self.disp.sync()
+    
+    def _button_event(self, button, is_down):
+        event_type = X.ButtonPress if is_down else X.ButtonRelease
+        fake_input(self.disp, event_type, button)
+        self.disp.flush()
+    
+    def down(self, button):
+        button_map = {"left": 1, "right": 3, "middle": 2}
+        if button in button_map:
+            self._button_event(button_map[button], True)
+    
+    def up(self, button):
+        button_map = {"left": 1, "right": 3, "middle": 2}
+        if button in button_map:
+            self._button_event(button_map[button], False)
+    
+    def click(self, button="left"):
+        self.down(button)
+        self.up(button)
+    
+    def scroll(self, direction):
+        # Direction > 0 for scroll up, < 0 for scroll down.
+        # 4 is scroll up, 5 is scroll down
+        button = 4 if direction > 0 else 5  
+        self._button_event(button, True)
+        self.disp.sync()
+        self._button_event(button, False)
+        self.disp.sync()
+    
+    def get_screen_size(self):
+        # Retrieves the screen size for reference.
+        screen = self.disp.screen()
+        return (screen.width_in_pixels, screen.height_in_pixels)
