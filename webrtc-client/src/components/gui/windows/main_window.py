@@ -108,19 +108,18 @@ class MainWindow(Window):
             #dpg.add_mouse_drag_handler(button=dpg.mvMouseButton_Right, callback=self.mouse_drag_callback)
             dpg.add_mouse_wheel_handler(callback=self.mouse_wheel_callback)
 
-
-    def mouse_move_callback(self, sender, data):
-        # "data[0]" is the mouse button (0=Left, 1=Right, 2=Middle)
-        # "data[1]" is time 
-        image_pos = self.get_on_image_position(data) 
-
-        self.control_input.mouse.move(image_pos)
-
     def image_exists(func):
         def wrapper(self, sender, data, *args, **kwargs):
             if (dpg.does_item_exist(self.TAG_TEXTURE)):
                 func(self, sender, data, *args, **kwargs)
         return wrapper
+
+    @image_exists
+    def mouse_move_callback(self, sender, data):
+        # "data" is position 
+        image_pos = self.get_on_image_position(data) 
+
+        self.control_input.mouse.move(image_pos)
 
     @image_exists
     def mouse_down_callback(self, sender, data):
