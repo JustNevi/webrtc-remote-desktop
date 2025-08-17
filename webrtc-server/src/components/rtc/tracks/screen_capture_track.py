@@ -1,45 +1,48 @@
 import asyncio
-import time
-import cv2
 import mss
 import numpy as np
 from av import VideoFrame
-from fractions import Fraction
-
-from aiortc.mediastreams import VideoStreamTrack
+from aiortc import VideoStreamTrack
 
 class ScreenCaptureTrack(VideoStreamTrack):
-    """
-    A video stream track that captures the screen efficiently.
-    """
-    def __init__(self, fps=30):
+    def __init__(self, fps=30, monitor=1, region=None, width=None, height=None, pix_fmt="yuv420p"):
         super().__init__()
-        self.monitor = None
         self.fps = fps
-        self.sct = mss.mss()
-        self.sct_monitor = self.sct.monitors[1]
-        self._last_capture_time = 0
+        self._sct = mss.mss()
+        self._monitor = region if region is not None else self._sct.monitors[monitor]
+        self._out_w = width
+        self._out_h = height
+        self._pix_fmt = pix_fmt
 
-    async def recv(self):
-        # Await the next frame based on the desired FPS
-        now = time.time()
-        if self._last_capture_time:
-            wait_time = (1.0 / self.fps) - (now - self._last_capture_time)
-            if wait_time > 0:
-                await asyncio.sleep(wait_time)
+    async def recv(self) -> VideoFrame:
+        # Pacing / timestamps managed by aiortc
+        pts, time_base = await self.next_timestamp()
 
-        # Capture a single frame from the screen
-        screenshot = self.sct.grab(self.sct_monitor)
-        self._last_capture_time = time.time()
+        shot = self._sct.grab(self._monitor)  # raw BGRA bytes, width=shot.width, height=shot.height
 
-        # Convert the screenshot to a VideoFrame
-        img = np.array(screenshot)
-        img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-        frame = VideoFrame.from_ndarray(img, format="bgr24")
+        # Wrap raw BGRA buffer without extra copy
+        arr = np.frombuffer(shot.raw, dtype=np.uint8)
+        arr = arr.reshape((shot.height, shot.width, 4))
 
-        # Set the timestamp and time base
-        pts = int(self._last_capture_time * 1000)
+        frame = VideoFrame.from_ndarray(arr, format="bgra")
+
+        # Optional resize + pixel format convert using libswscale (fast, in C)
+        target_w = self._out_w or frame.width
+        target_h = self._out_h or frame.height
+        target_fmt = self._pix_fmt or frame.format.name  # keep bgra if None
+
+        if (target_w != frame.width) or (target_h != frame.height) or (target_fmt != frame.format.name):
+            frame = frame.reformat(width=target_w, height=target_h, format=target_fmt)
+
         frame.pts = pts
-        frame.time_base = Fraction(1, 1000)
-        
+        frame.time_base = time_base
         return frame
+
+    async def close(self):
+        # Clean up mss resources
+        try:
+            self._sct.close()
+        except Exception:
+            pass
+        await super().stop()
+

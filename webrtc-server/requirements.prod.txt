@@ -1,7 +1,7 @@
 aiortc==1.13.0
 Quart==0.20.0
 numpy==2.2.6
-opencv-python==4.12.0.88
+av==14.4.0
 mss==10.0.0
 python3-xlib==0.15
 gunicorn==23.0.0
