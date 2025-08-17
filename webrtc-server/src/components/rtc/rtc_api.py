@@ -99,10 +99,6 @@ class RTCApi:
             # Handle messages for processing in control input thread
              if (self.control_queue):
                 if (self.control_transferring):
-                    # Empty all old controls 
-                    while not self.control_queue.empty():
-                        self.control_queue.get_nowait()
-
                     self.control_queue.put_nowait(message)
                     time.sleep(0.004)
 

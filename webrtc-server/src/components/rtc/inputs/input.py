@@ -40,7 +40,7 @@ class Input:
                 self.mouse.input(message)
         elif (ctype == "k"):
             if (self.keyboard):
-                pass
+                self.keyboard.input(message) 
 
     def parse_type(self, data):
         return data.split(":")[0]
