@@ -4,4 +4,4 @@ numpy==2.2.6
 av==14.4.0
 mss==10.0.0
 python3-xlib==0.15
-gunicorn==23.0.0
+Hypercorn==0.17.3
