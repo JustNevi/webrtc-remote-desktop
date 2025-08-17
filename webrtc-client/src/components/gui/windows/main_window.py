@@ -170,7 +170,7 @@ class MainWindow(Window):
         image_pos = dpg.get_item_pos(self.TAG_IMAGE)
 
         # This is actually image top-left position without title height (custom solution)
-        offset = (image_pos[0], image_pos[0])
+        offset = (image_pos[0], image_pos[1])
 
         return (position[0] - offset[0], position[1] - offset[1])
 
