@@ -172,7 +172,7 @@ class MainWindow(Window):
         # This is actually image top-left position without title height (custom solution)
         offset = (image_pos[0], image_pos[1])
 
-        return (position[0] - offset[0], position[1] - offset[1])
+        return (int(position[0] - offset[0]), int(position[1] - offset[1]))
 
          
     # Register keyboard events to get keys inputs 
