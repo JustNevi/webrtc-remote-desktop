@@ -21,14 +21,14 @@ class MouseInput:
 
         if (event == 0):  # Move
             position = eval(info[0])
-            self.controller.move_to(int(position[0]), int(position[1]))
+            self.controller.move_to(position[0], position[1])
         elif (event == 1):  # Down
             self.controller.down(buttons[button])
         elif (event == 2):  # Release
             self.controller.up(buttons[button])
         elif (event == 3):  # Drag (a combination of move and a held-down button)
             position = eval(info[0])
-            self.controller.move_to(int(position[0]), int(position[1]))
+            self.controller.move_to(position[0], position[1])
             # The 'down' state is implicitly handled by a prior 'down' event.
         elif (event == 4): # Scroll
             scroll_info = eval(info[0])

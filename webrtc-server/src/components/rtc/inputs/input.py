@@ -27,10 +27,8 @@ class Input:
                 self.control(control)
 
                 processed = True
-
-                time.sleep(0.05)
             if not processed:
-                time.sleep(0.005)
+                time.sleep(0.0005)
 
     def control(self, message):
         ctype = self.parse_type(message)
