@@ -3,3 +3,7 @@ services:
     build: .
     ports:
       - "5000:8000"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
