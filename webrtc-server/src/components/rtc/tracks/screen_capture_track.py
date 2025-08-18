@@ -1,4 +1,3 @@
-import asyncio
 import mss
 import numpy as np
 from av import VideoFrame
