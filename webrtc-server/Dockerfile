@@ -7,6 +7,9 @@ RUN apt-get update && \
     xvfb \
     xterm \
     fluxbox \
+	 # X testing
+	 mesa-utils \
+	 x11-utils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/rtc-rd/
