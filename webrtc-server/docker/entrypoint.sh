@@ -13,7 +13,7 @@ sleep 2
 export DISPLAY=:99
 
 # Start Fluxbox (the window manager) in the background
-fluxbox &
+fluxbox &> /dev/null &
 
 # Start xterm (the terminal emulator) and your Quart app
 exec hypercorn --bind 0.0.0.0:8000 main:app &
