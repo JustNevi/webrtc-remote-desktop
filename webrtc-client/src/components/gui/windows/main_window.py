@@ -51,8 +51,14 @@ class MainWindow(Window):
 
             texture_data, width, height = self.convert_video_frame_into_texture_data(video_frame) 
 
+            # Store frame size
+            self.frame_size = (width, height)
+
             # Create dynmic texture to render frames and setup size
             self.setup_display(width, height)
+
+            # If frame size changes - update window size
+            self.update_window_size()
 
             # Display the image
             if dpg.does_item_exist(self.TAG_TEXTURE):
@@ -60,9 +66,6 @@ class MainWindow(Window):
 
     def setup_display(self, width, height):
         if (not dpg.does_item_exist(self.TAG_TEXTURE)):
-            # Store frame size
-            self.frame_size = (width, height)
-
             # Delete information to replace with image
             dpg.delete_item(self.TAG_INFO)
 
@@ -81,6 +84,26 @@ class MainWindow(Window):
                 parent=self.TAG
             )
 
+    def get_image_margin(self):
+        # Get image position on this window (title height included)
+        image_pos = dpg.get_item_pos(self.TAG_IMAGE)
+
+        # This is actually image top-left position without title height (custom solution)
+        offset = (image_pos[0], image_pos[1])
+
+        return offset
+
+    def update_window_size(self):
+        margin = self.get_image_margin()
+        margin = (margin[0] * 2, margin[1] * 1.5)
+        size = (self.width - margin[0], self.height - margin[1])
+
+        if (self.frame_size != size):
+            self.width = self.frame_size[0] + margin[0]
+            self.height = self.frame_size[1] + margin[1]
+
+            dpg.set_item_width(self.TAG, self.width)
+            dpg.set_item_height(self.TAG, self.height)
 
     def convert_video_frame_into_texture_data(self, frame: VideoFrame):
         img = frame.to_ndarray(format="bgr24")
@@ -166,13 +189,10 @@ class MainWindow(Window):
 
     # Calculate position on image related to local window position
     def get_on_image_position(self, position):
-        # Get image position on this window (title height included)
-        image_pos = dpg.get_item_pos(self.TAG_IMAGE)
+        # Image top-left position without title height (custom solution)
+        margin = self.get_image_margin()
 
-        # This is actually image top-left position without title height (custom solution)
-        offset = (image_pos[0], image_pos[1])
-
-        return (int(position[0] - offset[0]), int(position[1] - offset[1]))
+        return (int(position[0] - margin[0]), int(position[1] - margin[1]))
 
          
     # Register keyboard events to get keys inputs 
