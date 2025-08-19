@@ -40,10 +40,13 @@ class RTCApi:
         self.logger = None
         self.setup_logger(do_logging)
 
-        self.init_peer_connection()
-
     # Create peerconnection and setup events
     def init_peer_connection(self):
+        # If peer connection has already been created - close it. 
+        if (self.pc):
+            asyncio.create_task(self.shutdown())
+
+        # Create peer connection
         self.pc = RTCPeerConnection()
 
         if (not self.is_offer):
@@ -54,7 +57,12 @@ class RTCApi:
 
         @self.pc.on("connectionstatechange")
         async def on_connection_state_change():
-            self.logger.info(f"Connection state is *{self.pc.connectionState}*.")
+            state = self.pc.connectionState
+            self.logger.info(f"Connection state is *{state}*.")
+
+            # Close everything if connection state is closed
+            if (state == "closed"):
+                await self.shutdown()
 
         @self.pc.on("track")
         def on_track(track):
@@ -151,6 +159,7 @@ class RTCApi:
                 self.logger.info("Datachannel closed.")
 
             await self.pc.close()
+            self.pc = None
             self.logger.info("RTCPeerConnection closed.")
 
     def setup_logger(self, do_logging):

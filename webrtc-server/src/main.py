@@ -22,8 +22,15 @@ DEBUG = os.getenv("RTC_RD_DEBUG")
 # Logging
 logging.basicConfig(level=logging.INFO)
 
+
 # Setup rtc api
-rtc_api = None 
+control_queue = queue.Queue()
+
+input = Input(control_queue)
+input.start()
+
+rtc_api = RTCApi(is_offer=False, control_queue=control_queue)
+
 
 # Setup Quart 
 app = Quart(__name__)
@@ -31,12 +38,6 @@ app = Quart(__name__)
 @app.before_serving
 async def create_rtc_api():
     global rtc_api
-    control_queue = queue.Queue()
-
-    input = Input(control_queue)
-    input.start()
-
-    rtc_api = RTCApi(is_offer=False, control_queue=control_queue)
 
 @app.after_serving
 async def shutdown_rtc_api():
@@ -50,6 +51,8 @@ async def add_offer_sdp():
     global rtc_api
     if (not rtc_api):
         return jsonify({"error": "RTC API not initialized"}), 503
+
+    rtc_api.init_peer_connection()
 
     data = await request.get_json()
 
