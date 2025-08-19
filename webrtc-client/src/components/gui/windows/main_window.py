@@ -51,7 +51,12 @@ class MainWindow(Window):
         with dpg.texture_registry(tag=self.TAG_TEXTURE_REGISTER):
             pass
 
-        with dpg.window(tag=self.TAG, label=self.lable, width=self.width, height=self.height):
+        with dpg.window(
+                tag=self.TAG, 
+                label=self.lable, 
+                width=self.width, height=self.height,
+                no_resize=True
+            ):
             dpg.add_text("Waiting for video stream...", tag=self.TAG_INFO)
 
         # Input handlers
@@ -120,8 +125,12 @@ class MainWindow(Window):
                 self.width = self.frame_size[0] + margin[0]
                 self.height = self.frame_size[1] + margin[1]
 
+                # Set windows size
                 dpg.set_item_width(self.TAG, self.width)
                 dpg.set_item_height(self.TAG, self.height)
+                # Set viewport size
+                dpg.set_viewport_width(self.width)
+                dpg.set_viewport_height(self.height)
 
     def convert_video_frame_into_texture_data(self, frame: VideoFrame):
         img = frame.to_ndarray(format="bgr24")
