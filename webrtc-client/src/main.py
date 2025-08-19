@@ -57,9 +57,12 @@ def start_rtc(frame_queue, control_queue, close_event):
     return loop
 
 def start_gui(frame_queue, control_input):
-    gui = Dearpygui("MainView", 1320, 840, frame_queue, control_input)
-    # The program stops here until the window is closed.
-    gui.init_gui()
+    try:
+        gui = Dearpygui("MainView", 1320, 840, frame_queue, control_input)
+        # The program stops here until the window is closed.
+        gui.init_gui()
+    except:
+        pass
 
 
 def main():
