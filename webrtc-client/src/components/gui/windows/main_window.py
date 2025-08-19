@@ -25,6 +25,8 @@ class MainWindow(Window):
         self.frame_queue = frame_queue
         self.frame_size = None
         self.texture_created = False
+        self._texture_buffer = None
+        self._rgb_buffer = None
 
         # Control input management
         self.control_input = control_input
@@ -124,20 +126,22 @@ class MainWindow(Window):
 
     def convert_video_frame_into_texture_data(self, frame: VideoFrame):
         img = frame.to_ndarray(format="bgr24")
+        height, width = img.shape[:2]
         
-        # Convert BGR to RGB for DearPyGUI
-        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # Reuse buffers to avoid memory allocation overhead
+        buffer_size = height * width * 3
         
-        # Normalize to 0-1 range for DearPyGUI (it expects float values)
-        img_normalized = img_rgb.astype(np.float32) / 255.0
+        if self._rgb_buffer is None or self._rgb_buffer.size != buffer_size:
+            self._rgb_buffer = np.empty((height, width, 3), dtype=np.uint8)
+            self._texture_buffer = np.empty(buffer_size, dtype=np.float32)
         
-        # Flatten the array for DearPyGUI texture
-        img_flat = img_normalized.flatten()
+        # Use pre-allocated buffer for BGR to RGB conversion
+        cv2.cvtColor(img, cv2.COLOR_BGR2RGB, dst=self._rgb_buffer)
         
-        # Get dimensions
-        height, width = img_rgb.shape[:2]
-
-        return img_flat, width, height
+        # Vectorized normalization and flattening in one step
+        np.multiply(self._rgb_buffer, 1.0/255.0, out=self._texture_buffer.reshape(height, width, 3), casting='unsafe')
+        
+        return self._texture_buffer, width, height
 
     # Register mouse events to get mouse position
     def register_mouse_handlers(self):
