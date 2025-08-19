@@ -7,6 +7,14 @@ import dearpygui.dearpygui as dpg
 from components.gui.windows.window import Window
 
 class MainWindow(Window):
+
+    # 655 - left click
+    # 656 - right click
+    # 657 - middle click
+    # 661 - scroll vertical  
+    # 660 - scroll horisontal  
+    IGNORED_KEYS = frozenset([655, 656, 657, 661, 660])
+
     def __init__(self, lable, width, height, frame_queue, control_input):
         # View
         self.lable = lable
@@ -16,19 +24,26 @@ class MainWindow(Window):
         # Video frame queue
         self.frame_queue = frame_queue
         self.frame_size = None
+        self.texture_created = False
 
         # Control input management
         self.control_input = control_input
         self.mouse_is_down = False
         
         # Tags
+        self.setup_tags()
+
+    def setup_tags(self):
         self.TAG = self.__class__.__name__
+
         def make_tag(name):
             return f"{self.TAG}_{name}"
+
         self.TAG_INFO = make_tag("info")
         self.TAG_TEXTURE_REGISTER = make_tag("texture_register") 
         self.TAG_TEXTURE = make_tag("texture")
         self.TAG_IMAGE = make_tag("image")
+
 
     def render(self):
         with dpg.texture_registry(tag=self.TAG_TEXTURE_REGISTER):
@@ -65,7 +80,7 @@ class MainWindow(Window):
                 dpg.set_value(self.TAG_TEXTURE, texture_data)
 
     def setup_display(self, width, height):
-        if (not dpg.does_item_exist(self.TAG_TEXTURE)):
+        if (not self.texture_created):
             # Delete information to replace with image
             dpg.delete_item(self.TAG_INFO)
 
@@ -83,6 +98,8 @@ class MainWindow(Window):
                 tag=self.TAG_IMAGE,
                 parent=self.TAG
             )
+
+            self.texture_created = True
 
     def get_image_margin(self):
         # Get image position on this window (title height included)
@@ -209,13 +226,8 @@ class MainWindow(Window):
 
     def key_ignore(func):
         def wrapper(self, sender, data, *args, **kwargs):
-            # 655 - left click
-            # 656 - right click
-            # 657 - middle click
-            # 661 - scroll vertical  
-            # 660 - scroll horisontal  
-            ignore = [ 655, 656, 657, 661, 660 ]
-            if (data not in ignore):
+
+            if (data not in self.IGNORED_KEYS):
                 func(self, sender, data, *args, **kwargs)
         return wrapper
 
