@@ -57,12 +57,13 @@ class RTCApi:
 
         @self.pc.on("connectionstatechange")
         async def on_connection_state_change():
-            state = self.pc.connectionState
-            self.logger.info(f"Connection state is *{state}*.")
+            if (self.pc):
+                state = self.pc.connectionState
+                self.logger.info(f"Connection state is *{state}*.")
 
-            # Close everything if connection state is closed
-            if (state == "closed"):
-                await self.shutdown()
+                # Close everything if connection state is closed
+                if (state == "closed"):
+                    await self.shutdown()
 
         @self.pc.on("track")
         def on_track(track):
