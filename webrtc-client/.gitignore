@@ -1,0 +1,4 @@
+# Build
+/src/build/
+/src/dist/
+*.spec
