@@ -61,8 +61,8 @@ def start_gui(frame_queue, control_input):
         gui = Dearpygui("MainView", 1320, 840, frame_queue, control_input)
         # The program stops here until the window is closed.
         gui.init_gui()
-    except:
-        pass
+    except Exception as e:
+        logging.error(str(e))
 
 
 def main():
