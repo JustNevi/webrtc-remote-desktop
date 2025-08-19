@@ -189,10 +189,16 @@ class MainWindow(Window):
 
     # Calculate position on image related to local window position
     def get_on_image_position(self, position):
+        # Get this window position
+        window_pos = dpg.get_item_pos(self.TAG)
+
         # Image top-left position without title height (custom solution)
         margin = self.get_image_margin()
 
-        return (int(position[0] - margin[0]), int(position[1] - margin[1]))
+        return (
+            int(position[0] - margin[0] - window_pos[0]), 
+            int(position[1] - margin[1] - window_pos[1])
+        )
 
          
     # Register keyboard events to get keys inputs 
