@@ -76,16 +76,13 @@ class RTCApi:
                 if (self.frame_queue):
                     async def receiver():
                         while (self.frame_receiving):
-                            # from av import VidioFrame 
-                            frame = await track.recv()
-
-                            # Empty all old frames 
-                            while (not self.frame_queue.empty()):
-                                self.frame_queue.get_nowait()
-
-                            self.frame_queue.put_nowait(frame)
-                            
-                            await asyncio.sleep(0)
+                            try:
+                                # from av import VidioFrame 
+                                frame = await asyncio.wait_for(track.recv(), timeout=0.01)
+                                self.frame_queue.put_nowait(frame)
+                            except asyncio.TimeoutError:
+                                # No frame received in the last 0.01 seconds, continue
+                                pass
 
                     asyncio.create_task(receiver())
 
