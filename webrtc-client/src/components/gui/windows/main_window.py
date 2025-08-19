@@ -23,7 +23,7 @@ class MainWindow(Window):
 
         # Video frame queue
         self.frame_queue = frame_queue
-        self.frame_size = None
+        self.frame_size = (self.width, self.height) 
         self.texture_created = False
         self._texture_buffer = None
         self._rgb_buffer = None
@@ -68,14 +68,11 @@ class MainWindow(Window):
 
             texture_data, width, height = self.convert_video_frame_into_texture_data(video_frame) 
 
-            # Store frame size
-            self.frame_size = (width, height)
-
             # Create dynmic texture to render frames and setup size
             self.setup_display(width, height)
 
             # If frame size changes - update window size
-            self.update_window_size()
+            self.update_window_size(width, height)
 
             # Display the image
             if dpg.does_item_exist(self.TAG_TEXTURE):
@@ -112,17 +109,19 @@ class MainWindow(Window):
 
         return offset
 
-    def update_window_size(self):
-        margin = self.get_image_margin()
-        margin = (margin[0] * 2, margin[1] * 1.5)
-        size = (self.width - margin[0], self.height - margin[1])
+    def update_window_size(self, width, height):
+        if (self.frame_size != (width, height)):
+            margin = self.get_image_margin()
+            if (margin != (0, 0)):
+                self.frame_size = (width, height)
 
-        if (self.frame_size != size):
-            self.width = self.frame_size[0] + margin[0]
-            self.height = self.frame_size[1] + margin[1]
+                margin = (margin[0] * 2, margin[1] * 1.5)
 
-            dpg.set_item_width(self.TAG, self.width)
-            dpg.set_item_height(self.TAG, self.height)
+                self.width = self.frame_size[0] + margin[0]
+                self.height = self.frame_size[1] + margin[1]
+
+                dpg.set_item_width(self.TAG, self.width)
+                dpg.set_item_height(self.TAG, self.height)
 
     def convert_video_frame_into_texture_data(self, frame: VideoFrame):
         img = frame.to_ndarray(format="bgr24")
@@ -155,7 +154,7 @@ class MainWindow(Window):
 
     def image_exists(func):
         def wrapper(self, sender, data, *args, **kwargs):
-            if (dpg.does_item_exist(self.TAG_TEXTURE)):
+            if (self.texture_created):
                 func(self, sender, data, *args, **kwargs)
         return wrapper
 
