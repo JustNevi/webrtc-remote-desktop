@@ -43,7 +43,6 @@ class Dearpygui:
         manager = ManagerWindow(self.endpoint)
 
         main = MainWindow(
-            "MainWindow", 
             self.width, 
             self.height, 
             manager.get_frame_queue(), 

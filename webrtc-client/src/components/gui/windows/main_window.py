@@ -15,9 +15,9 @@ class MainWindow(Window):
     # 660 - scroll horisontal  
     IGNORED_KEYS = frozenset([655, 656, 657, 661, 660])
 
-    def __init__(self, lable, width, height, frame_queue, control_input):
+    def __init__(self, width, height, frame_queue, control_input):
         # View
-        self.lable = lable
+        self.label = "MainWindow" 
         self.width = width
         self.height = height
 
@@ -53,7 +53,7 @@ class MainWindow(Window):
 
         with dpg.window(
                 tag=self.TAG, 
-                label=self.lable, 
+                label=self.label, 
                 width=self.width, height=self.height,
                 no_resize=True
             ):
