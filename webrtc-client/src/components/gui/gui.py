@@ -12,15 +12,18 @@ class Dearpygui:
 
         self.endpoint = endpoint
 
+        self.windows: list[Window] = []
+
     def init_gui(self):
-        windows = self.setup_windows()
-        
+        # Create and setup windows
+        self.setup_windows()
+
         # Dearpygui setup
         dpg.create_context()
         dpg.create_viewport(title=self.title, width=self.width, height=self.height)
 
         # Init windows and render components
-        for window in windows:
+        for window in self.windows:
             window.render()
 
         dpg.setup_dearpygui()
@@ -30,7 +33,7 @@ class Dearpygui:
         # All inside runs every frame.
         while dpg.is_dearpygui_running():
             # Make all needed updates in windows
-            for window in windows:
+            for window in self.windows:
                 window.update()
 
             dpg.render_dearpygui_frame()    
@@ -38,7 +41,7 @@ class Dearpygui:
         dpg.destroy_context()
 
     def setup_windows(self):
-        windows: list[Window] = []
+        self.windows = []
 
         manager = ManagerWindow(self.endpoint)
 
@@ -49,10 +52,10 @@ class Dearpygui:
             manager.get_control_input()
         )
 
-        windows.extend([
+        self.windows.extend([
             main,
             manager
         ])
 
-        return windows  
-
+    def close(self):
+        self.windows[1].stop_rtc()

@@ -119,10 +119,12 @@ class ManagerWindow(Window):
         self.rtc_async_loop = loop 
 
     def stop_rtc(self):
-        # Set close event
-        self.rtc_async_loop.call_soon_threadsafe(self.rtc_close_event.set)
-        # Wait for rtc peer connection closes
-        time.sleep(1)
+        if (self.rtc_async_loop):
+            logging.info("Stopping RTC...")
+            # Set close event
+            self.rtc_async_loop.call_soon_threadsafe(self.rtc_close_event.set)
+            # Wait for rtc peer connection closes
+            time.sleep(1)
 
     # Run async rtc client
     async def run_rtc(self):
@@ -144,6 +146,3 @@ class ManagerWindow(Window):
         finally:
             await self.rtc.shutdown()
             logging.info("RTC shutdown complete.")
-
-    def __del__(self):
-        self.stop_rtc()
