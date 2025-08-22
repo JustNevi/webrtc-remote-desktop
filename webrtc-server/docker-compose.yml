@@ -3,6 +3,8 @@ services:
     build: .
     ports:
       - "5000:8000"
+    environment:
+      RTC_RD_DEBUG: ${RTC_RD_DEBUG}   
     deploy:
       resources:
         limits:
