@@ -15,7 +15,6 @@ class RTCApi:
             frame_queue: queue.Queue=None, 
             control_queue: queue.Queue=None, 
             on_message=lambda msg: print(msg), 
-            do_logging=True
         ):
         self.pc = None 
         self.is_offer = is_offer
@@ -37,8 +36,8 @@ class RTCApi:
         self.frame_queue = frame_queue 
 
         # Logging
-        self.logger = None
-        self.setup_logger(do_logging)
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.DEBUG)
 
     # Create peerconnection and setup events
     def init_peer_connection(self):
@@ -162,10 +161,3 @@ class RTCApi:
             await self.pc.close()
             self.pc = None
             self.logger.info("RTCPeerConnection closed.")
-
-    def setup_logger(self, do_logging):
-        name = self.__class__.__name__
-
-        self.logger = logging.getLogger(name)
-        if (not do_logging):
-            self.logger.addFilter(logging.Filter(name))

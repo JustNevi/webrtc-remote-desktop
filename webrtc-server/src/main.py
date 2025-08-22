@@ -20,7 +20,10 @@ PORT = os.getenv("RTC_RD_PORT")
 DEBUG = os.getenv("RTC_RD_DEBUG") 
 
 # Logging
-logging.basicConfig(level=logging.INFO)
+if (DEBUG):
+    logging.basicConfig(level=logging.INFO)
+else:
+    logging.basicConfig(level=logging.CRITICAL + 1)
 
 
 # Setup rtc api
