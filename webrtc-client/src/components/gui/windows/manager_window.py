@@ -42,6 +42,9 @@ class ManagerWindow(Window):
             control_queue=self.control_queue
         )
 
+        # Logging
+        self.logger = logging.getLogger(self.__class__.__name__)
+
         # Tags
         self.setup_tags()
 
@@ -91,6 +94,7 @@ class ManagerWindow(Window):
     # Handle messages from inputs controller
     def control_input_callback(self, message):
         self.control_queue.put_nowait(message)
+        self.logger.debug(message)
 
     def is_rtc_running(self):
         if (self.rtc_thread):
@@ -120,7 +124,7 @@ class ManagerWindow(Window):
 
     def stop_rtc(self):
         if (self.rtc_async_loop):
-            logging.info("Stopping RTC...")
+            self.logger.info("Stopping RTC...")
             # Set close event
             self.rtc_async_loop.call_soon_threadsafe(self.rtc_close_event.set)
             # Wait for rtc peer connection closes
@@ -145,4 +149,4 @@ class ManagerWindow(Window):
             await self.rtc_close_event.wait()
         finally:
             await self.rtc.shutdown()
-            logging.info("RTC shutdown complete.")
+            self.logger.info("RTC shutdown complete.")
