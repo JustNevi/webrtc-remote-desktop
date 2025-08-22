@@ -37,7 +37,6 @@ class RTCApi:
 
         # Logging
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
 
     # Create peerconnection and setup events
     def init_peer_connection(self):
